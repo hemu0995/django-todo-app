@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Welcome to the Django Todo App</h2>
+<p>This is a simple todo application built with Django for practicing EC2 deployment.</p>
+<p><a href="{% url 'todo_list' %}">Go to your todo list</a> to start managing your tasks.</p>
+{% endblock %}
