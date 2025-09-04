@@ -7,9 +7,13 @@ If you setup the project as a root user (sudo su), then please avoid sudo in the
 **1. Project Structure and Virtual Environment:**
 
   cd /var/www/html
+  
   python3 -m venv venv
+  
   source venv/bin/activate
+  
   pip install -r requirements.txt
+  
   pip install gunicorn
 
 **2. Django Settings Configuration:**
@@ -22,6 +26,7 @@ ALLOWED_HOSTS = ['your-ec2-public-ip', 'localhost', '127.0.0.1']
 
 # Static files configuration
 STATIC_URL = '/static/'
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # For production, set DEBUG to False
@@ -38,16 +43,25 @@ DEBUG = False
    Add the below configurations
 
 [Unit]
+
 Description=gunicorn daemon
+
 After=network.target
 
 [Service]
+
 User=ubuntu
+
 Group=www-data
+
 WorkingDirectory=/var/www/html
-ExecStart=/var/www/html/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/var/www/html/gunicorn.sock todo_project.wsgi:application
+
+ExecStart=/var/www/html/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/var/www/html/
+
+gunicorn.sock todo_project.wsgi:application
 
 [Install]
+
 WantedBy=multi-user.target
 
 **5. Configure Nginx:**
@@ -57,7 +71,9 @@ sudo nano /etc/nginx/sites-available/django-todo
 Add the configurations into the nginx/sites-available/django-todo file:
 
 server {
+
     listen 80;
+
     server_name your-ec2-public-ip;
 
     location = /favicon.ico { access_log off; log_not_found off; }
@@ -67,12 +83,15 @@ server {
     }
     
     location / {
+
         include proxy_params;
+
         proxy_pass http://unix:/var/www/html/gunicorn.sock;
     }
 }
 
 Enable the site:
+
 sudo ln -s /etc/nginx/sites-available/django-todo /etc/nginx/sites-enabled/
 
 **6. Set Proper Permissions**
